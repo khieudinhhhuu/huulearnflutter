@@ -1,76 +1,149 @@
 import 'package:flutter/material.dart';
-import 'package:hello_world/home/home_screen.dart';
+import 'package:flutter/services.dart';
+import 'package:hello_world/home/home_detail.dart';
+import 'package:hello_world/more/profile_screen.dart';
 
-void main() => runApp(const TabNavigator());
-
-class TabNavigator extends StatelessWidget {
-    const TabNavigator({super.key});
-
-    static const String _title = 'Flutter Code Sample';
+class MoreScreen extends StatefulWidget {
+    const MoreScreen({super.key});
 
     @override
-    Widget build(BuildContext context) {
-        return const MaterialApp(
-            debugShowCheckedModeBanner: false,
-            title: _title,
-            home: MyStatefulWidget(),
-        );
-    }
+    State<MoreScreen> createState() => _MyWidgetState();
 }
 
-class MyStatefulWidget extends StatefulWidget {
-    const MyStatefulWidget({super.key});
+class _MyWidgetState extends State<MoreScreen> {
 
-    @override
-    State<MyStatefulWidget> createState() => _MyStatefulWidgetState();
-}
-
-class _MyStatefulWidgetState extends State<MyStatefulWidget> {
-    int _selectedIndex = 0;
-    static const TextStyle optionStyle =
-        TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-    static const List<Widget> _widgetOptions = <Widget>[
-        HomeScreen(),
-        Text(
-        'Index 1: Business',
-        style: optionStyle,
-        ),
-        Text(
-        'Index 2: School',
-        style: optionStyle,
-        ),
+    final menu = [
+        'Thong bao',
+        'Cai dat',
+        'Tro giup',
+        'Dang xuat',
     ];
 
-    void _onItemTapped(int index) {
-        setState(() {
-        _selectedIndex = index;
-        });
-    }
-
     @override
     Widget build(BuildContext context) {
-        return Scaffold(
-            body: Center(
-                child: _widgetOptions.elementAt(_selectedIndex),
+
+        SystemChrome.setSystemUIOverlayStyle(
+            const SystemUiOverlayStyle(
+                statusBarColor: Colors.green,
+                statusBarIconBrightness: Brightness.dark, // For Android (dark icons)
+                //statusBarBrightness: Brightness.light,
             ),
-            bottomNavigationBar: BottomNavigationBar(
-                items: const <BottomNavigationBarItem>[
-                BottomNavigationBarItem(
-                    icon: Icon(Icons.home),
-                    label: 'Home',
-                ),
-                BottomNavigationBarItem(
-                    icon: Icon(Icons.business),
-                    label: 'Business',
-                ),
-                BottomNavigationBarItem(
-                    icon: Icon(Icons.school),
-                    label: 'School',
-                ),
-                ],
-                currentIndex: _selectedIndex,
-                selectedItemColor: Colors.amber[800],
-                onTap: _onItemTapped,
+        );
+
+        return SafeArea(
+            child: Scaffold(
+                body: Column(
+                    children: [
+                        Container(
+                            height: 50,
+                            alignment: Alignment.center,
+                            color: Colors.green,
+                            width: MediaQuery.of(context).size.width,
+                            padding: const EdgeInsets.only(left: 20, right: 20),
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                    const SizedBox(width: 40),
+                                    const Text(
+                                        'More',
+                                        // ignore: prefer_const_constructors
+                                        style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 20,
+                                        ),
+                                    ),
+                                    IconButton(
+                                        onPressed: () {
+                                            
+                                        },
+                                        icon: const Icon(Icons.list),
+                                    ),
+                                ],
+                            ),
+                        ),
+                        const SizedBox(height: 20),
+                        GestureDetector(
+                            onTap: (){
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) =>  const ProfileScreen()),
+                                );
+                            },
+                            child: Container(
+                                padding: const EdgeInsets.all(10),
+                                color: Colors.green,
+                                child: Row(
+                                    children: [
+                                        ClipRRect(
+                                            borderRadius: BorderRadius.circular(30),
+                                            child: Image.network(
+                                                'https://images.mubicdn.net/images/film/155526/cache-156771-1639429610/image-w1280.jpg?size=800x',
+                                                fit: BoxFit.cover,
+                                                width: 60,
+                                                height: 60,
+                                            ),
+                                        ),
+                                        Expanded(
+                                            child: Container(
+                                                padding: const EdgeInsets.only(left: 10),
+                                                child: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                        Text(
+                                                            'Khieu Dinh Hue Huu',
+                                                            style: const TextStyle(
+                                                                fontWeight: FontWeight.bold,
+                                                                fontSize: 18,
+                                                                color: Colors.black,
+                                                            ),
+                                                            maxLines: 1,
+                                                        ),
+                                                        const SizedBox(height: 5),
+                                                        Text(
+                                                            'Trang ca nhan',
+                                                            style: const TextStyle(
+                                                                fontSize: 14,
+                                                                color: Colors.black,
+                                                                overflow: TextOverflow.ellipsis
+                                                            ),
+                                                            maxLines: 1,
+                                                        ),
+                                                    ],
+                                                ),
+                                            ),
+                                        ),
+                                    ],
+                                ),
+                            ),
+                        ),
+                        const SizedBox(height: 20),
+                        Expanded(
+                            child: Container(
+                                child: ListView.builder(
+                                    itemCount: menu.length,
+                                    itemBuilder: (context, index) {
+                                        return 
+                                            GestureDetector(
+                                                onTap: (){
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(builder: (context) =>  Text('')),
+                                                    );
+                                                },
+                                                child: Container(
+                                                padding: const EdgeInsets.all(10),
+                                                color: Colors.green,
+                                                margin: const EdgeInsets.only(top: 10),
+                                                   child: Text(menu[index]),
+                                                )
+                                            );
+                                    }
+                                ),
+                            ),
+                        ),
+                    ],
+                )
             ),
         );
     }

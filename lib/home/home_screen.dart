@@ -120,7 +120,7 @@ class _MyWidgetState extends State<HomeScreen> {
 
         SystemChrome.setSystemUIOverlayStyle(
             const SystemUiOverlayStyle(
-                statusBarColor: Colors.white,
+                statusBarColor: Colors.green,
                 statusBarIconBrightness: Brightness.dark, // For Android (dark icons)
                 //statusBarBrightness: Brightness.light,
             ),

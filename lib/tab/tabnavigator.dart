@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hello_world/home/home_screen.dart';
+import 'package:hello_world/more/more_screen.dart';
 
 void main() => runApp(const TabNavigator());
 
@@ -32,13 +33,10 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
     static const List<Widget> _widgetOptions = <Widget>[
         HomeScreen(),
         Text(
-        'Index 1: Business',
-        style: optionStyle,
-        ),
-        Text(
         'Index 2: School',
         style: optionStyle,
         ),
+        MoreScreen(),
     ];
 
     void _onItemTapped(int index) {

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -14,8 +15,23 @@ class _MyWidgetState extends State<SignupScreen> {
     TextEditingController passwordController = TextEditingController();
     TextEditingController repasswordController = TextEditingController();
 
+    void Confirm () async {
+
+        FirebaseAuth auth = FirebaseAuth.instance;
+            UserCredential userCredential = await auth.createUserWithEmailAndPassword(
+                email: nameController.text,
+                password: passwordController.text,
+            );
+            var user = userCredential.user;
+            await user!.updateProfile(displayName: nameController.text);
+            await user.reload();
+            user = auth.currentUser;
+    }
+
+
     @override
     Widget build(BuildContext context) {
+
         SystemChrome.setSystemUIOverlayStyle(
             const SystemUiOverlayStyle(
             statusBarColor: Colors.white,
@@ -69,7 +85,6 @@ class _MyWidgetState extends State<SignupScreen> {
                                             autovalidateMode: AutovalidateMode.onUserInteraction,
                                             controller: nameController,
                                             keyboardType: TextInputType.emailAddress,
-                                            maxLength: 13,
                                             decoration: InputDecoration(
                                                 contentPadding: const EdgeInsets.only(left: 12),
                                                 counterText: '',
@@ -85,7 +100,7 @@ class _MyWidgetState extends State<SignupScreen> {
                                             autovalidateMode: AutovalidateMode.onUserInteraction,
                                             controller: passwordController,
                                             keyboardType: TextInputType.visiblePassword,
-                                            maxLength: 13,
+                                            maxLength: 16,
                                             obscureText: true,
                                             decoration: InputDecoration(
                                                 contentPadding: const EdgeInsets.only(left: 12),
@@ -102,7 +117,7 @@ class _MyWidgetState extends State<SignupScreen> {
                                             autovalidateMode: AutovalidateMode.onUserInteraction,
                                             controller: repasswordController,
                                             keyboardType: TextInputType.visiblePassword,
-                                            maxLength: 13,
+                                            maxLength: 16,
                                             obscureText: true,
                                             decoration: InputDecoration(
                                                 contentPadding: const EdgeInsets.only(left: 12),
@@ -114,9 +129,10 @@ class _MyWidgetState extends State<SignupScreen> {
                                                 ),
                                             ),
                                         ),
+                                        const SizedBox( height: 40),
                                         ElevatedButton(
                                             onPressed: () {
-                                                Navigator.pop(context);
+                                                Confirm();
                                             },
                                             child: const Text('Xác Nhận'),
                                         ),

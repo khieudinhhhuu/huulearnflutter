@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "657410772433",
+    "project_id": "huulearnflutter",
+    "storage_bucket": "huulearnflutter.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:657410772433:android:286a05ee13e1bc88dee4f0",
+        "android_client_info": {
+          "package_name": "com.example.hello_world"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "657410772433-id23qvngleqg129npblc04qh5u98t2er.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.hello_world",
+            "certificate_hash": "5204c2de9c7bd67419bff6c7443702ba530e3174"
+          }
+        },
+        {
+          "client_id": "657410772433-tp7ri7lfgl5ka3rbf26bubm1todeui0o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmsmaYPMkXJpJPoyWY_IxrsaT0mdab_5s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "657410772433-tp7ri7lfgl5ka3rbf26bubm1todeui0o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
