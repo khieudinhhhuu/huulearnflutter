@@ -1,0 +1,19 @@
+{
+    "editor.tabSize": 4,
+    "[dart]": {
+        "editor.tabSize": 4,
+        // "editor.defaultFormatter": "Dart-Code.dart-code",
+        // "editor.formatOnSave": true, 
+        "editor.detectIndentation": false,
+        "editor.insertSpaces": true,
+
+        "prettier.tabWidth": 4,
+        "prettier.useTabs": true 
+    },
+    "[javascript]": {
+        "editor.tabSize": 4
+    },
+    "[json]": {
+        "editor.tabSize": 4
+    },
+}
