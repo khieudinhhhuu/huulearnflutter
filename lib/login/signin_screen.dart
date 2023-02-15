@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hello_world/home/home_screen.dart';
 import 'package:hello_world/login/signup_screen.dart';
 import 'package:hello_world/tab/tabnavigator.dart';
 

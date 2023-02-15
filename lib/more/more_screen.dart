@@ -1,6 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hello_world/home/home_detail.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:hello_world/login/signin_screen.dart';
 import 'package:hello_world/more/profile_screen.dart';
 
 class MoreScreen extends StatefulWidget {
@@ -12,12 +15,40 @@ class MoreScreen extends StatefulWidget {
 
 class _MyWidgetState extends State<MoreScreen> {
 
+    final keyScreenMore = GlobalKey<FormState>();
+
     final menu = [
         'Thong bao',
         'Cai dat',
         'Tro giup',
         'Dang xuat',
     ];
+
+    Future<void> menuAction (context, i) async {
+        if (i == 0 || i == 1 || i == 2) {
+            Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ProfileScreen() ),
+            );
+        }
+        if (i == 3) {
+            final GoogleSignIn googleSignIn = GoogleSignIn();
+            try {
+                if (!kIsWeb) {
+                    await googleSignIn.signOut();
+                }
+                await FirebaseAuth.instance.signOut();
+
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (BuildContext context) => const SigninScreen(),
+                ))
+                .then((_) => keyScreenMore.currentState?.reset());
+
+            } catch (e) {
+                print(e);
+            }
+        }
+    }
 
     @override
     Widget build(BuildContext context) {
@@ -122,14 +153,11 @@ class _MyWidgetState extends State<MoreScreen> {
                             child: Container(
                                 child: ListView.builder(
                                     itemCount: menu.length,
-                                    itemBuilder: (context, index) {
+                                    itemBuilder: (value, index) {
                                         return 
                                             GestureDetector(
                                                 onTap: (){
-                                                    Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(builder: (context) =>  Text('')),
-                                                    );
+                                                    menuAction(context, index);
                                                 },
                                                 child: Container(
                                                 padding: const EdgeInsets.all(10),
