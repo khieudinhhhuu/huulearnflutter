@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hello_world/login/signup_screen.dart';
 import 'package:hello_world/tab/tabnavigator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SigninScreen extends StatefulWidget {
     const SigninScreen({super.key});
@@ -14,6 +16,50 @@ class _MyWidgetState extends State<SigninScreen> {
 
     TextEditingController nameController = TextEditingController();
     TextEditingController passwordController = TextEditingController();
+
+    void confirmLogin (context) async {
+        if (nameController.text == '') {
+            print('vui long nhap email');
+        } 
+        else if (passwordController.text == '') {
+            print('vui long nhap mk');
+        }
+        else if (passwordController.text.length < 6) {
+            print('mk tu 6 ky tu tro len');
+        }
+        else {
+            try {
+                final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+                    email: nameController.text,
+                    password: passwordController.text
+                );
+                print('tinh day: ${credential}');
+                if (credential.user?.uid != null) {
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.setString('TOKEN', credential.user?.uid ?? '');
+
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const TabNavigator()),
+                    );
+                    // Navigator.of(context).push(MaterialPageRoute(
+                    //     builder: (BuildContext context) => const TabNavigator(),
+                    // ))
+                    // .then((_) => _formKeyScreen1.currentState?.reset());
+                }
+            } on FirebaseAuthException catch (e) {
+                if (e.code == 'user-not-found') {
+                    print('No user found for that email.');
+                } else if (e.code == 'wrong-password') {
+                    print('Wrong password provided for that user.');
+                }
+            }
+            // Navigator.push(
+            //     context,
+            //     MaterialPageRoute(builder: (context) => const TabNavigator()),
+            // );
+        }
+    }
 
     @override
     Widget build(BuildContext context) {
@@ -81,9 +127,8 @@ class _MyWidgetState extends State<SigninScreen> {
                                         autovalidateMode: AutovalidateMode.onUserInteraction,
                                         controller: nameController,
                                         keyboardType: TextInputType.emailAddress,
-                                        maxLength: 13,
                                         decoration: InputDecoration(
-                                            contentPadding: EdgeInsets.only(left: 12),
+                                            contentPadding: const EdgeInsets.only(left: 12),
                                             counterText: '',
                                             labelText: 'Email',
                                             border: const OutlineInputBorder(),
@@ -96,8 +141,7 @@ class _MyWidgetState extends State<SigninScreen> {
                                     TextFormField(
                                         autovalidateMode: AutovalidateMode.onUserInteraction,
                                         controller: passwordController,
-                                        keyboardType: TextInputType.phone,
-                                        maxLength: 13,
+                                        keyboardType: TextInputType.text,
                                         obscureText: true,
                                         decoration: InputDecoration(
                                             contentPadding: const EdgeInsets.only(left: 12),
@@ -125,10 +169,7 @@ class _MyWidgetState extends State<SigninScreen> {
                                             ),
                                             child: const Text('Đăng nhập'),
                                             onPressed: () {
-                                                Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(builder: (context) => const TabNavigator()),
-                                                );
+                                                confirmLogin(context);
                                             },
                                         ),
                                     ),

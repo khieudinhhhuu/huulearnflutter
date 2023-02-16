@@ -58,12 +58,12 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                     label: 'Home',
                 ),
                 BottomNavigationBarItem(
-                    icon: Icon(Icons.business),
-                    label: 'Business',
+                    icon: Icon(Icons.chat),
+                    label: 'Chat',
                 ),
                 BottomNavigationBarItem(
-                    icon: Icon(Icons.school),
-                    label: 'School',
+                    icon: Icon(Icons.more_horiz),
+                    label: 'More',
                 ),
                 ],
                 currentIndex: _selectedIndex,

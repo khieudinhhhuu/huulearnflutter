@@ -1,14 +1,44 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class ProfileScreen extends StatefulWidget {
-    const ProfileScreen({super.key});
+    ProfileScreen({super.key, required Object user});
+
+    dynamic user;
 
     @override
     State<ProfileScreen> createState() => _MyWidgetState();
 }
 
 class _MyWidgetState extends State<ProfileScreen> {
+    dynamic user;
+    Object dataUser = {};
+
+    @override
+    void initState() {
+        super.initState();
+        getProfile();
+    }
+
+    void getProfile () {
+        final FirebaseAuth _auth = FirebaseAuth.instance;
+        User user = _auth.currentUser!;
+
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get()
+            .then((DocumentSnapshot documentSnapshot) {
+            if (documentSnapshot.exists) {
+                print('Document data: ${documentSnapshot.data()}');
+                setState(() {
+                    dataUser = documentSnapshot.data()!;
+                });
+            }
+        });
+    }
 
     @override
     Widget build(BuildContext context) {
@@ -60,7 +90,7 @@ class _MyWidgetState extends State<ProfileScreen> {
                                     child: ClipRRect(
                                         borderRadius: BorderRadius.circular(10),
                                         child: Image.network(
-                                            'https://images.mubicdn.net/images/film/155526/cache-156771-1639429610/image-w1280.jpg?size=800x',
+                                            'dataUser.photoUrl',
                                             fit: BoxFit.cover,
                                             width: MediaQuery.of(context).size.width,
                                             height: 200,

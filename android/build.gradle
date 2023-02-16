@@ -1,4 +1,7 @@
 buildscript {
+    ext {
+        minSdkVersion = 16
+    }
     ext.kotlin_version = '1.7.10'
     repositories {
         google()

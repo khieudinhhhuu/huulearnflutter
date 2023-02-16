@@ -24,20 +24,22 @@ class _MyWidgetState extends State<SplashScreen> {
 
     void checkToken () async {
         final prefs = await SharedPreferences.getInstance();
-        final int? token = prefs.getInt('TOKEN');
+        final String? token = prefs.getString('TOKEN');
 
         if (token != null) {
-            var future = new Future.delayed(const Duration(milliseconds: 50), () => {
+            var future = new Future.delayed(const Duration(milliseconds: 3000), () => {
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => const TabNavigator()),
                 ),
             });
         } else {
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const SigninScreen()),
-            );
+            var future = new Future.delayed(const Duration(milliseconds: 3000), () => {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SigninScreen()),
+                ),
+            });
         }
     }
 

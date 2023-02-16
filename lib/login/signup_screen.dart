@@ -1,10 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hello_world/tab/tabnavigator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+
 
 class SignupScreen extends StatefulWidget {
     const SignupScreen({super.key});
@@ -19,7 +24,7 @@ class _MyWidgetState extends State<SignupScreen> {
     TextEditingController passwordController = TextEditingController();
     TextEditingController repasswordController = TextEditingController();
 
-    void Confirm () async {
+    void Confirm (context) async {
         if (nameController.text == '') {
             print('vui long nhap email');
         } 
@@ -42,6 +47,9 @@ class _MyWidgetState extends State<SignupScreen> {
                     email: nameController.text,
                     password: passwordController.text,
                 );
+                print('buon ngu qua: ${credential}');
+                getUserDoc();
+                Navigator.pop(context);
             } on FirebaseAuthException catch (e) {
                 if (e.code == 'weak-password') {
                     print('The password provided is too weak.');
@@ -52,6 +60,34 @@ class _MyWidgetState extends State<SignupScreen> {
                 print(e);
             }
         }
+    }
+
+    Future<void> getUserDoc() {
+        // Initiate an auth instance
+        final FirebaseAuth _auth = FirebaseAuth.instance;
+        // Initiate a firebase firestore instance
+        final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+        // Create a current user object
+        User user = _auth.currentUser!;
+        // Create a document reference based on the 'users'
+        DocumentReference ref = _firestore.collection('users').doc(user.uid);
+
+        // Return a collection that sets/updates the following data
+        // based on the user.uid
+        return ref.set({
+            'uid': user.uid,
+            'email': user.email,
+            'password': passwordController.text,
+            'displayName': '',
+            'phoneNumber': '',
+            'address': 'Việt Nam',
+            'photoURL': 'https://images.vexels.com/media/users/3/147101/isolated/preview/b4a49d4b864c74bb73de63f080ad7930-instagram-profile-button-by-vexels.png',
+            'follow': 0,
+            'status': 'offline',
+            'createdUserAt': user.metadata.creationTime,
+            'lastSignInAt': user.metadata.lastSignInTime,
+            'emailVerified': user.emailVerified,
+        });
     }
 
     static Future<User?> loginWithGoogle (context) async {
@@ -78,7 +114,7 @@ class _MyWidgetState extends State<SignupScreen> {
             if (userCredential.credential!.accessToken != null) {
 
                 final prefs = await SharedPreferences.getInstance();
-                await prefs.setInt('TOKEN', userCredential.credential!.accessToken as int);
+                await prefs.setString('TOKEN', userCredential.credential!.accessToken ?? '');
 
                 Navigator.pushReplacement(
                     context,
@@ -200,7 +236,7 @@ class _MyWidgetState extends State<SignupScreen> {
                                           const SizedBox( height: 40),
                                           ElevatedButton(
                                               onPressed: () {
-                                                  Confirm();
+                                                  Confirm(context);
                                               },
                                               child: const Text('Xác Nhận'),
                                           ),

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hello_world/login/signin_screen.dart';
 import 'package:hello_world/more/profile_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MoreScreen extends StatefulWidget {
     const MoreScreen({super.key});
@@ -24,11 +26,37 @@ class _MyWidgetState extends State<MoreScreen> {
         'Dang xuat',
     ];
 
+    Object dataUser = {};
+
+    @override
+    void initState() {
+        super.initState();
+        getProfile();
+    }
+
+    void getProfile () {
+        final FirebaseAuth _auth = FirebaseAuth.instance;
+        User user = _auth.currentUser!;
+
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get()
+            .then((DocumentSnapshot documentSnapshot) {
+            if (documentSnapshot.exists) {
+                print('Document data: ${documentSnapshot.data()}');
+                setState(() {
+                    dataUser = documentSnapshot.data()!;
+                });
+            }
+        });
+    }
+
     Future<void> menuAction (context, i) async {
         if (i == 0 || i == 1 || i == 2) {
             Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const ProfileScreen() ),
+                MaterialPageRoute(builder: (context) => ProfileScreen(user: dataUser) ),
             );
         }
         if (i == 3) {
@@ -38,6 +66,9 @@ class _MyWidgetState extends State<MoreScreen> {
                     await googleSignIn.signOut();
                 }
                 await FirebaseAuth.instance.signOut();
+
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.remove('TOKEN');
 
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (BuildContext context) => const SigninScreen(),
@@ -98,7 +129,7 @@ class _MyWidgetState extends State<MoreScreen> {
                             onTap: (){
                                 Navigator.push(
                                     context,
-                                    MaterialPageRoute(builder: (context) =>  const ProfileScreen()),
+                                    MaterialPageRoute(builder: (context) =>  ProfileScreen(user: dataUser)),
                                 );
                             },
                             child: Container(
