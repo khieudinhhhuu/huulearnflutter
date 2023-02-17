@@ -44,7 +44,7 @@ class _MyWidgetState extends State<MoreScreen> {
             .get()
             .then((DocumentSnapshot documentSnapshot) {
             if (documentSnapshot.exists) {
-                print('Document data: ${documentSnapshot.data()}');
+                //print('Document data: ${documentSnapshot.data()}');
                 setState(() {
                     dataUser = documentSnapshot.data()!;
                 });

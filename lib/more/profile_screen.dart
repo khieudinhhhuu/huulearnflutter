@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hello_world/model/model_user.dart';
 
 class ProfileScreen extends StatefulWidget {
     ProfileScreen({super.key, required Object user});
@@ -13,8 +14,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _MyWidgetState extends State<ProfileScreen> {
-    dynamic user;
-    Object dataUser = {};
 
     @override
     void initState() {
@@ -23,6 +22,7 @@ class _MyWidgetState extends State<ProfileScreen> {
     }
 
     void getProfile () {
+        List<ModelUser> modelUser = [];
         final FirebaseAuth _auth = FirebaseAuth.instance;
         User user = _auth.currentUser!;
 
@@ -30,12 +30,11 @@ class _MyWidgetState extends State<ProfileScreen> {
             .collection('users')
             .doc(user.uid)
             .get()
-            .then((DocumentSnapshot documentSnapshot) {
-            if (documentSnapshot.exists) {
+            .then((DocumentSnapshot<Map<String, dynamic>> documentSnapshot) {
+            if (documentSnapshot.exists && documentSnapshot.data() != null) {
                 print('Document data: ${documentSnapshot.data()}');
-                setState(() {
-                    dataUser = documentSnapshot.data()!;
-                });
+                modelUser.add(ModelUser.fromJson(documentSnapshot.data() as Map<String, dynamic>));
+                print('tttttttttttttttt: ${modelUser}');
             }
         });
     }
@@ -90,7 +89,7 @@ class _MyWidgetState extends State<ProfileScreen> {
                                     child: ClipRRect(
                                         borderRadius: BorderRadius.circular(10),
                                         child: Image.network(
-                                            'dataUser.photoUrl',
+                                            'https://images.mubicdn.net/images/film/155526/cache-156771-1639429610/image-w1280.jpg?size=800x',
                                             fit: BoxFit.cover,
                                             width: MediaQuery.of(context).size.width,
                                             height: 200,
