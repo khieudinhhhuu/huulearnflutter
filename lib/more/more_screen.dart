@@ -56,7 +56,7 @@ class _MyWidgetState extends State<MoreScreen> {
         if (i == 0 || i == 1 || i == 2) {
             Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ProfileScreen(user: dataUser) ),
+                MaterialPageRoute(builder: (context) => ProfileScreen() ),
             );
         }
         if (i == 3) {
@@ -129,7 +129,7 @@ class _MyWidgetState extends State<MoreScreen> {
                             onTap: (){
                                 Navigator.push(
                                     context,
-                                    MaterialPageRoute(builder: (context) =>  ProfileScreen(user: dataUser)),
+                                    MaterialPageRoute(builder: (context) =>  ProfileScreen()),
                                 );
                             },
                             child: Container(

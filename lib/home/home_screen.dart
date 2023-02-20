@@ -113,29 +113,19 @@ class _MyWidgetState extends State<HomeScreen> {
         getAllData();
     }
 
-            final books = <ModelBook>[];
+    final books = <ModelBook>[];
 
-    Future<List<ModelBook>> getAllData () async {
+    void getAllData () {
         print("Active Users");
-        var val = await FirebaseFirestore.instance
+        FirebaseFirestore.instance
             .collection("social_network")
-            .get();
-        var documents = val.docs;
-        print("Documents ${documents.length}");
-        if (documents.length > 0) {
-            try {
-                print("Active ${documents.length}");
-                return documents.map((document) {
-                ModelBook bookingList = ModelBook.fromJson(Map<String, dynamic>.from(document.data()));
-                
-                return bookingList;
-                }).toList();
-            } catch (e) {
-                print("Exception $e");
-                return [];
-            }
-        }
-        return [];
+            .get()
+            .then((QuerySnapshot querySnapshot) {
+                querySnapshot.docs.forEach((doc) {
+                    print(doc["title"]);
+                    print('met que: ${doc}');
+                });
+        });
     }
     
     String styleList = 'list';
