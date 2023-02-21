@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:hello_world/home/component/item_home_grid.dart';
 import 'package:hello_world/model/model_book.dart';
 import 'package:hello_world/model/model_user.dart';
+import 'package:hello_world/more/component/item_profile_friend.dart';
 
 class ProfileScreen extends StatefulWidget {
     const ProfileScreen({super.key});
@@ -310,17 +311,18 @@ class _MyWidgetState extends State<ProfileScreen> {
                                         ),
                                     ),
                                     Container(
-                                        height: 450,
+                                        height: MediaQuery.of(context).size.height/2.3,
+                                        padding: const EdgeInsets.only(left: 13, right: 13),
                                         child: GridView.builder(
-                                            physics: NeverScrollableScrollPhysics(),
+                                            physics: const NeverScrollableScrollPhysics(),
                                             itemCount: books.length ,
                                             itemBuilder: (context, index) {
-                                                return ItemHomeGrid(item: books[index]);
+                                                return ItemProfileFriend(item: books[index]);
                                             },
                                             gridDelegate:  SliverGridDelegateWithFixedCrossAxisCount(
                                                 crossAxisCount: 3, 
                                                 crossAxisSpacing: 0,
-                                                mainAxisExtent: MediaQuery.of(context).size.width/2,
+                                                mainAxisExtent: MediaQuery.of(context).size.width/2.4,
                                             ),
                                         ),
                                     ),
@@ -389,6 +391,7 @@ class _MyWidgetState extends State<ProfileScreen> {
                                                                 height: 40,
                                                             ),
                                                         ),
+                                                        const SizedBox( width: 5),
                                                         const Text(
                                                             'Bạn đang nghĩ gì?',
                                                             // ignore: prefer_const_constructors
