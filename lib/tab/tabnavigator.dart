@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hello_world/home/home_screen.dart';
-import 'package:hello_world/more/more_screen.dart';
+import 'package:hello_world/tab/more_screen.dart';
 
 void main() => runApp(const TabNavigator());
 

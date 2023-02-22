@@ -5,7 +5,8 @@ import 'package:flutter/services.dart';
 import 'package:hello_world/home/component/item_home_grid.dart';
 import 'package:hello_world/model/model_book.dart';
 import 'package:hello_world/model/model_user.dart';
-import 'package:hello_world/more/component/item_profile_friend.dart';
+import 'package:hello_world/profile/component/item_profile_friend.dart';
+import 'package:hello_world/profile/post_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
     const ProfileScreen({super.key});
@@ -391,13 +392,21 @@ class _MyWidgetState extends State<ProfileScreen> {
                                                                 height: 40,
                                                             ),
                                                         ),
-                                                        const SizedBox( width: 5),
-                                                        const Text(
-                                                            'Bạn đang nghĩ gì?',
-                                                            // ignore: prefer_const_constructors
-                                                            style: TextStyle(
-                                                                color: Colors.black,
-                                                                fontSize: 14,
+                                                        const SizedBox( width: 10),
+                                                        GestureDetector(
+                                                            onTap: (){
+                                                                Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(builder: (context) =>  const PostScreen()),
+                                                                );
+                                                            },
+                                                            child: const Text(
+                                                                'Bạn đang nghĩ gì?',
+                                                                // ignore: prefer_const_constructors
+                                                                style: TextStyle(
+                                                                    color: Colors.black,
+                                                                    fontSize: 14,
+                                                                ),
                                                             ),
                                                         ),
                                                     ],

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hello_world/login/signin_screen.dart';
-import 'package:hello_world/more/profile_screen.dart';
+import 'package:hello_world/profile/profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MoreScreen extends StatefulWidget {

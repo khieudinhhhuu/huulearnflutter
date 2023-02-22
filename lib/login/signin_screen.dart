@@ -129,7 +129,7 @@ class _MyWidgetState extends State<SigninScreen> {
                                         keyboardType: TextInputType.emailAddress,
                                         decoration: InputDecoration(
                                             contentPadding: const EdgeInsets.only(left: 12),
-                                            counterText: '',
+                                            counterText: '50',
                                             labelText: 'Email',
                                             border: const OutlineInputBorder(),
                                             enabledBorder: OutlineInputBorder(

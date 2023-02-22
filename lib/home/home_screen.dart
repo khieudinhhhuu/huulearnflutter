@@ -123,14 +123,17 @@ class _MyWidgetState extends State<HomeScreen> {
             .then((QuerySnapshot querySnapshot) {
                 querySnapshot.docs.forEach((doc) {
                     print(doc["title"]);
-                    print('met que: ${doc}');
+                    final data = doc.data() as Map<String, dynamic>;
+                    print('met que: ${data}');
+                    books.add(ModelBook.fromJson(data));
                 });
+                return books;
         });
     }
     
     String styleList = 'list';
 
-    void ChangeStyleList() {
+    void changeStyleList() {
         if (styleList == 'list') {
             setState(() {
                 styleList = 'grid';
@@ -178,7 +181,7 @@ class _MyWidgetState extends State<HomeScreen> {
                             ),
                             IconButton(
                                 onPressed: () {
-                                    ChangeStyleList();
+                                    changeStyleList();
                                 },
                                 icon: const Icon(Icons.list),
                             ),
