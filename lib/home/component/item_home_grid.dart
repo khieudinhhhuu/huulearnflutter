@@ -49,9 +49,9 @@ class ItemHomeGrid extends StatelessWidget {
                             Container(
                                 margin: const EdgeInsets.only(top: 5, left: 5, right: 5),
                                 alignment: Alignment.centerLeft,
-                                child: Text(
-                                    item.description,
-                                    style: const TextStyle(
+                                child: const Text(
+                                    'hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh',
+                                    style: TextStyle(
                                         fontSize: 14,
                                         color: Colors.black,
                                         overflow: TextOverflow.ellipsis
@@ -63,7 +63,7 @@ class ItemHomeGrid extends StatelessWidget {
                                 margin: const EdgeInsets.only(top: 5, left: 5, right: 5),
                                 alignment: Alignment.centerLeft,
                                 child: Text(
-                                    '${item.price} vnd',
+                                    '${item.title} vnd',
                                     style: const TextStyle(
                                         fontSize: 20,
                                         color: Colors.red,

@@ -1,10 +1,10 @@
 import 'dart:io';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class PostScreen extends StatefulWidget {
     const PostScreen({super.key});
@@ -16,42 +16,61 @@ class PostScreen extends StatefulWidget {
 class _MyWidgetState extends State<PostScreen> {
 
     TextEditingController titlePost = TextEditingController();
-    File? imagePost;
+    String imagePost = '';
+    String textInput = '';
+    
+      get p => null;
 
-    void addImage () async {
-        // final ImagePicker _picker = ImagePicker();
-        // final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-        // if (image != null) {
-        //     setState(() {
-        //         imagePost = File(image.path);
-        //     });
-        // }
+    void addImage (context) async {
 
         final metadata = SettableMetadata(contentType: "image/jpeg");
         final storageRef = FirebaseStorage.instance.ref();
 
-        //Check Permissions
-        await Permission.photos.request();
-
-        var permissionStatus = await Permission.photos.status;
-
-        if (permissionStatus.isGranted){
-            final ImagePicker _picker = ImagePicker();
-            final XFile? imageFile = await _picker.pickImage(source: ImageSource.gallery);
-            if (imageFile != null) {
-                var file = File(imageFile.path);
-                //Upload to Firebase
-                var snapshot = await storageRef.child('images/imageName').putFile(file, metadata);
-                var downloadUrl = await snapshot.ref.getDownloadURL();
-                print('ket qua day: ${downloadUrl}');
-                // setState(() {
-                //     imagePost = downloadUrl;
-                // });
-            } else {
-                print('No Image Path Received');
-            }
+        final ImagePicker picker = ImagePicker();
+        final XFile? imageFile = await picker.pickImage(source: ImageSource.gallery);
+        if (imageFile != null) {
+            var file = File(imageFile.path);
+            var sessionId = DateTime.now().toUtc().millisecondsSinceEpoch;
+            var snapshot = await storageRef.child('images/$sessionId').putFile(file, metadata);
+            var downloadUrl = await snapshot.ref.getDownloadURL();
+            setState(() {
+                imagePost = downloadUrl;
+            });
+            Navigator.pop(context);
         } else {
-            print('Permission not granted. Try Again with permission access');
+            print('No Image Path Received');
+        }
+    }
+
+    void deletaImage (context) {
+        setState(() {
+            imagePost = '';
+        });
+    }
+
+    void postNow (context) {
+        if (titlePost.text.isNotEmpty || imagePost != '') {
+            final FirebaseAuth auth = FirebaseAuth.instance;
+            User user = auth.currentUser!;
+            FirebaseFirestore.instance.collection('social_network').add({
+                    'title': titlePost.text,
+                    'images': imagePost,
+                    'createdDate': DateTime.now().toUtc().millisecondsSinceEpoch,
+                    'likes': null,
+                    'comments': null,
+                    'share': 0,
+                    'idUser': user.uid,
+                })
+                .then((value) => {
+                    print("User Added success"),
+                    Navigator.pop(context),
+                    setState(() {
+                        titlePost.text = '';
+                        imagePost = '';
+                        textInput = '';
+                    })
+                })
+                .catchError((error) => print("Failed to add user: $error"));
         }
     }
 
@@ -64,6 +83,9 @@ class _MyWidgetState extends State<PostScreen> {
                 //statusBarBrightness: Brightness.light,
             ),
         );
+        print('1: ${titlePost.text}');
+        print('2: $imagePost');
+        print('3: $textInput');
         return SafeArea(
             child: Scaffold(
                 body: Column(
@@ -90,19 +112,24 @@ class _MyWidgetState extends State<PostScreen> {
                                         fontSize: 16,
                                     ),
                                 ),
-                                Container(
-                                    padding: const EdgeInsets.all(7),
-                                    margin: const EdgeInsets.only(right: 15),
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(5),
-                                        color: const Color.fromARGB(255, 207, 213, 216),
-                                    ),
-                                    child: const Text(
-                                        'Đăng',
-                                        style: TextStyle(
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 16,
+                                GestureDetector(
+                                    onTap: (){
+                                        postNow(context);
+                                    },
+                                    child: Container(
+                                        padding: const EdgeInsets.only(left: 10, right: 10, top: 7, bottom: 7),
+                                        margin: const EdgeInsets.only(right: 13),
+                                        decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(5),
+                                            color: (titlePost.text.isNotEmpty || imagePost != '') ? Colors.blue : const Color.fromARGB(255, 236, 239, 240),
+                                        ),
+                                        child: Text(
+                                            'Đăng',
+                                            style: TextStyle(
+                                                color: (titlePost.text.isNotEmpty || imagePost != '') ? Colors.white : Colors.grey,
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 16,
+                                            ),
                                         ),
                                     ),
                                 ),
@@ -204,6 +231,11 @@ class _MyWidgetState extends State<PostScreen> {
                                         ),
                                     ),
                                     TextFormField(
+                                        onChanged: (value) {
+                                            setState(() {
+                                                textInput = value;
+                                            });
+                                        },
                                         autovalidateMode: AutovalidateMode.onUserInteraction,
                                         controller: titlePost,
                                         keyboardType: TextInputType.multiline,
@@ -221,24 +253,29 @@ class _MyWidgetState extends State<PostScreen> {
                                     ),
                                     Stack(
                                         children: [
-                                            imagePost != null
-                                            ? Image.file(
-                                                imagePost!,
+                                            imagePost != ''
+                                            ? Image.network(
+                                                imagePost,
                                                 fit: BoxFit.contain,
                                                 //width: MediaQuery.of(context).size.width,
                                                 //height: 220,
                                             )
-                                            : const Text('Please select an image'),
+                                            : Container(),
                                             Positioned(
                                                 top: 10,
                                                 right: 13,
-                                                child: Container(
-                                                    padding: const EdgeInsets.all(1),
-                                                    decoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.circular(5),
-                                                        color: Colors.black,
+                                                child: GestureDetector(
+                                                    onTap: (){
+                                                        deletaImage(context);
+                                                    },
+                                                    child: Container(
+                                                        padding: const EdgeInsets.all(1),
+                                                        decoration: BoxDecoration(
+                                                            borderRadius: BorderRadius.circular(5),
+                                                            color: Colors.black,
+                                                        ),
+                                                        child: const Icon(Icons.close, color: Colors.white),
                                                     ),
-                                                    child: const Icon(Icons.close, color: Colors.white),
                                                 ),
                                             ),
                                         ] 
@@ -247,128 +284,128 @@ class _MyWidgetState extends State<PostScreen> {
                             ),
                         ),
                     ),
-                    Container(
-                        padding: const EdgeInsets.only(left: 10, right: 10, top: 15, bottom: 10),
-                        decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-                            color: Colors.white,
-                            boxShadow: [
-                                BoxShadow(
-                                    color: Colors.grey,
-                                    spreadRadius: 3,
-                                    blurRadius: 3,
-                                    offset: Offset(0, 3), // changes position of shadow
-                                ),
-                            ],
-                        ),
-                        child: GestureDetector(
-                            onTap: () {
-                                showModalBottomSheet<void>(
-                                    backgroundColor: Colors.transparent,
-                                    barrierColor: Colors.transparent,
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                    return Container(
-                                        height: 250,
-                                        decoration: const BoxDecoration(
-                                            borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
-                                            color: Colors.white,
-                                            boxShadow: [
-                                                BoxShadow(
-                                                    color: Colors.grey,
-                                                    spreadRadius: 3,
-                                                    blurRadius: 3,
-                                                    offset: Offset(0, 3),
+                    GestureDetector(
+                        onTap: () {
+                            showModalBottomSheet<void>(
+                                backgroundColor: Colors.transparent,
+                                barrierColor: Colors.transparent,
+                                context: context,
+                                builder: (BuildContext context) {
+                                return Container(
+                                    height: 250,
+                                    decoration: const BoxDecoration(
+                                        borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+                                        color: Colors.white,
+                                        boxShadow: [
+                                            BoxShadow(
+                                                color: Colors.grey,
+                                                spreadRadius: 3,
+                                                blurRadius: 3,
+                                                offset: Offset(0, 3),
+                                            ),
+                                        ],
+                                    ),
+                                    child: Container(
+                                        padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
+                                        child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            //crossAxisAlignment: CrossAxisAlignment.start,
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: <Widget>[
+                                                GestureDetector(
+                                                    onTap: (){
+                                                        addImage(context);
+                                                    },
+                                                    child: Container(
+                                                        alignment: Alignment.centerLeft,
+                                                        margin: const EdgeInsets.only(top: 15),
+                                                        child: Row(
+                                                            children: const [
+                                                                Icon(Icons.image, color: Colors.green, size: 30),
+                                                                SizedBox( width: 10),
+                                                                Text(
+                                                                    'Ảnh/video',
+                                                                    style: TextStyle(
+                                                                        color: Colors.black,
+                                                                        fontSize: 15,
+                                                                    ),
+                                                                ),
+                                                            ],
+                                                        ),
+                                                    ),
+                                                ),
+                                                Container(
+                                                    alignment: Alignment.centerLeft,
+                                                    margin: const EdgeInsets.only(top: 15),
+                                                    child: Row(
+                                                        children: const [
+                                                            Icon(Icons.person, color: Colors.blue, size: 30),
+                                                            SizedBox( width: 10),
+                                                            Text(
+                                                                'Gắn thẻ người khác',
+                                                                style: TextStyle(
+                                                                    color: Colors.black,
+                                                                    fontSize: 15,
+                                                                ),
+                                                            ),
+                                                        ],
+                                                    ),
+                                                ),
+                                                Container(
+                                                    alignment: Alignment.centerLeft,
+                                                    margin: const EdgeInsets.only(top: 15),
+                                                    child: Row(
+                                                        children: const [
+                                                            Icon(Icons.tag_faces, color: Colors.yellow, size: 30),
+                                                            SizedBox( width: 10),
+                                                            Text(
+                                                                'Cảm xúc/Hoạt động',
+                                                                style: TextStyle(
+                                                                    color: Colors.black,
+                                                                    fontSize: 15,
+                                                                ),
+                                                            ),
+                                                        ],
+                                                    ),
+                                                ),
+                                                Container(
+                                                    alignment: Alignment.centerLeft,
+                                                    margin: const EdgeInsets.only(top: 15),
+                                                    child: Row(
+                                                        children: const [
+                                                            Icon(Icons.location_disabled, color: Colors.red, size: 30),
+                                                            SizedBox( width: 10),
+                                                            Text(
+                                                                'Check in',
+                                                                style: TextStyle(
+                                                                    color: Colors.black,
+                                                                    fontSize: 15,
+                                                                ),
+                                                            ),
+                                                        ],
+                                                    ),
                                                 ),
                                             ],
                                         ),
-                                        child: Container(
-                                            padding: const EdgeInsets.only(left: 20, right: 20, top: 10),
-                                            child: Column(
-                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                //crossAxisAlignment: CrossAxisAlignment.start,
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: <Widget>[
-                                                    GestureDetector(
-                                                        onTap: (){
-                                                            addImage();
-                                                        },
-                                                        child: Container(
-                                                            alignment: Alignment.centerLeft,
-                                                            margin: const EdgeInsets.only(top: 15),
-                                                            child: Row(
-                                                                children: const [
-                                                                    Icon(Icons.image, color: Colors.green, size: 30),
-                                                                    SizedBox( width: 10),
-                                                                    Text(
-                                                                        'Ảnh/video',
-                                                                        style: TextStyle(
-                                                                            color: Colors.black,
-                                                                            fontSize: 15,
-                                                                        ),
-                                                                    ),
-                                                                ],
-                                                            ),
-                                                        ),
-                                                    ),
-                                                    Container(
-                                                        alignment: Alignment.centerLeft,
-                                                        margin: const EdgeInsets.only(top: 15),
-                                                        child: Row(
-                                                            children: const [
-                                                                Icon(Icons.person, color: Colors.blue, size: 30),
-                                                                SizedBox( width: 10),
-                                                                Text(
-                                                                    'Gắn thẻ người khác',
-                                                                    style: TextStyle(
-                                                                        color: Colors.black,
-                                                                        fontSize: 15,
-                                                                    ),
-                                                                ),
-                                                            ],
-                                                        ),
-                                                    ),
-                                                    Container(
-                                                        alignment: Alignment.centerLeft,
-                                                        margin: const EdgeInsets.only(top: 15),
-                                                        child: Row(
-                                                            children: const [
-                                                                Icon(Icons.tag_faces, color: Colors.yellow, size: 30),
-                                                                SizedBox( width: 10),
-                                                                Text(
-                                                                    'Cảm xúc/Hoạt động',
-                                                                    style: TextStyle(
-                                                                        color: Colors.black,
-                                                                        fontSize: 15,
-                                                                    ),
-                                                                ),
-                                                            ],
-                                                        ),
-                                                    ),
-                                                    Container(
-                                                        alignment: Alignment.centerLeft,
-                                                        margin: const EdgeInsets.only(top: 15),
-                                                        child: Row(
-                                                            children: const [
-                                                                Icon(Icons.location_disabled, color: Colors.red, size: 30),
-                                                                SizedBox( width: 10),
-                                                                Text(
-                                                                    'Check in',
-                                                                    style: TextStyle(
-                                                                        color: Colors.black,
-                                                                        fontSize: 15,
-                                                                    ),
-                                                                ),
-                                                            ],
-                                                        ),
-                                                    ),
-                                                ],
-                                            ),
-                                        ),
-                                    );
-                                    },
+                                    ),
                                 );
-                            },
+                                },
+                            );
+                        },
+                        child: Container(
+                            padding: const EdgeInsets.only(left: 10, right: 10, top: 15, bottom: 10),
+                            decoration: const BoxDecoration(
+                                borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+                                color: Colors.white,
+                                boxShadow: [
+                                    BoxShadow(
+                                        color: Colors.grey,
+                                        spreadRadius: 3,
+                                        blurRadius: 3,
+                                        offset: Offset(0, 3), // changes position of shadow
+                                    ),
+                                ],
+                            ),
                             child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: const [

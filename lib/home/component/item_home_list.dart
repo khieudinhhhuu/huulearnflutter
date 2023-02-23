@@ -53,7 +53,7 @@ class ItemHomeList extends StatelessWidget {
                                             ),
                                             const SizedBox(height: 5),
                                             Text(
-                                                item.description,
+                                                item.title,
                                                 style: const TextStyle(
                                                     fontSize: 14,
                                                     color: Colors.black,
@@ -63,7 +63,7 @@ class ItemHomeList extends StatelessWidget {
                                             ),
                                             const SizedBox(height: 5),
                                             Text(
-                                                '${item.price} vnd',
+                                                '${item.title} vnd',
                                                 style: const TextStyle(
                                                     fontSize: 20,
                                                     color: Colors.red,

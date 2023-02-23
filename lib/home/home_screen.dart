@@ -9,6 +9,7 @@ import 'package:hello_world/home/component/item_home_grid.dart';
 import 'package:hello_world/home/component/item_home_list.dart';
 import 'package:hello_world/home/home_detail.dart';
 import 'package:hello_world/model/model_book.dart';
+import 'package:hello_world/model/model_post.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -114,6 +115,7 @@ class _MyWidgetState extends State<HomeScreen> {
     }
 
     final books = <ModelBook>[];
+    final posts = <ModelPost>[];
 
     void getAllData () {
         print("Active Users");
@@ -125,9 +127,10 @@ class _MyWidgetState extends State<HomeScreen> {
                     print(doc["title"]);
                     final data = doc.data() as Map<String, dynamic>;
                     print('met que: ${data}');
-                    books.add(ModelBook.fromJson(data));
+                    //books.add(ModelBook.fromJson(data));
+                    posts.add(ModelPost.fromJson(data));
                 });
-                return books;
+                return posts;
         });
     }
     
@@ -193,9 +196,9 @@ class _MyWidgetState extends State<HomeScreen> {
                     child: Container(
                         child: styleList == 'grid' ? 
                             GridView.builder(
-                                itemCount: books.length ,
+                                itemCount: posts.length ,
                                 itemBuilder: (context, index) {
-                                    return ItemHomeGrid(item: books[index]);
+                                    return ItemHomeGrid(item: posts[index]);
                                 },
                                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                                     crossAxisCount: 2, 
@@ -205,9 +208,9 @@ class _MyWidgetState extends State<HomeScreen> {
                             )
                             :
                             ListView.builder(
-                                itemCount: books.length,
+                                itemCount: posts.length,
                                 itemBuilder: (context, index) {
-                                    return ItemHomeList(item: books[index]);
+                                    return ItemHomeList(item: posts[index]);
                                 }
                             ),
                     ),

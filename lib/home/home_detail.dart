@@ -89,7 +89,7 @@ class HomeDetail extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     padding: const EdgeInsets.only(left: 20, right: 20),
                     child: Text(
-                      'Price: ${item?.price}',
+                      'Price: ${item?.title}',
                       style: const TextStyle(
                         fontSize: 20,
                         color: Colors.red,
@@ -101,7 +101,7 @@ class HomeDetail extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     padding: const EdgeInsets.only(left: 20, right: 20),
                     child: Text(
-                      'Description: ${item?.description}',
+                      'Description: ${item?.title}',
                       style: const TextStyle(
                         fontSize: 20,
                         color: Colors.red,
