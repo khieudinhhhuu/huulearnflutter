@@ -10,6 +10,7 @@ import 'package:hello_world/home/component/item_home_list.dart';
 import 'package:hello_world/home/home_detail.dart';
 import 'package:hello_world/model/model_book.dart';
 import 'package:hello_world/model/model_post.dart';
+import 'package:hello_world/profile/post_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -118,7 +119,6 @@ class _MyWidgetState extends State<HomeScreen> {
     final posts = <ModelPost>[];
 
     void getAllData () {
-        print("Active Users");
         FirebaseFirestore.instance
             .collection("social_network")
             .get()
@@ -126,9 +126,9 @@ class _MyWidgetState extends State<HomeScreen> {
                 querySnapshot.docs.forEach((doc) {
                     print(doc["title"]);
                     final data = doc.data() as Map<String, dynamic>;
-                    print('met que: ${data}');
+                    print('met que: $data');
                     //books.add(ModelBook.fromJson(data));
-                    posts.add(ModelPost.fromJson(data));
+                    posts.add(ModelPost.fromMap(data));
                 });
                 return posts;
         });
@@ -147,76 +147,146 @@ class _MyWidgetState extends State<HomeScreen> {
             });
         }
     }
+    Widget itemHearder () {
+        return Container(
+            padding: const EdgeInsets.all(10),
+            color: Colors.white,
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                    Row(
+                        children: [
+                            ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: Image.network(
+                                    'https://cdn.iconscout.com/icon/free/png-256/avatar-370-456322.png',
+                                    fit: BoxFit.cover,
+                                    width: 40,
+                                    height: 40,
+                                ),
+                            ),
+                            const SizedBox( width: 10),
+                            GestureDetector(
+                                onTap: (){
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) =>  const PostScreen()),
+                                    );
+                                },
+                                child: const Text(
+                                    'Bạn đang nghĩ gì?',
+                                    // ignore: prefer_const_constructors
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 14,
+                                    ),
+                                ),
+                            ),
+                        ],
+                    ),
+                    Image.network(
+                        'https://images.freeimages.com/fic/images/icons/1168/simplexity_file/256/png.png',
+                        fit: BoxFit.cover,
+                        width: 25,
+                        height: 25,
+                    ),
+                ],
+            ),
+        );
+    }
 
     @override
     Widget build(BuildContext context) {
 
         SystemChrome.setSystemUIOverlayStyle(
             const SystemUiOverlayStyle(
-                statusBarColor: Colors.green,
+                statusBarColor: Colors.white,
                 statusBarIconBrightness: Brightness.dark, // For Android (dark icons)
                 //statusBarBrightness: Brightness.light,
             ),
         );
 
         return SafeArea(
-        child: Scaffold(
-            body: Column(
-                children: [
-                Container(
-                    height: 50,
-                    alignment: Alignment.center,
-                    color: Colors.green,
-                    width: MediaQuery.of(context).size.width,
-                    padding: const EdgeInsets.only(left: 20, right: 20),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                            const SizedBox(width: 40),
-                            const Text(
-                                'Home',
-                                // ignore: prefer_const_constructors
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 20,
-                                ),
+            child: Scaffold(
+                body: Column(
+                    children: [
+                        Container(
+                            height: 50,
+                            color: Colors.white,
+                            width: MediaQuery.of(context).size.width,
+                            padding: const EdgeInsets.only(left: 10, right: 10),
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                    const Text(
+                                        'Hello World',
+                                        style: TextStyle(
+                                            color: Colors.green,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 25,
+                                        ),
+                                    ),
+                                    Row(
+                                        children: [
+                                            Container(
+                                                padding: const EdgeInsets.all(3),
+                                                decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(20),
+                                                    color: const Color.fromARGB(255, 225, 227, 229),
+                                                ),
+                                                child: const Icon(Icons.search, size: 25,),
+                                            ),
+                                            GestureDetector(
+                                                onTap: () {
+                                                    changeStyleList();
+                                                },
+                                                child: Container(
+                                                    padding: const EdgeInsets.all(3),
+                                                    margin: const EdgeInsets.only(left: 15),
+                                                    decoration: BoxDecoration(
+                                                        borderRadius: BorderRadius.circular(20),
+                                                        color: const Color.fromARGB(255, 225, 227, 229),
+                                                    ),
+                                                    child: const Icon(Icons.list, size: 25,),
+                                                ),
+                                            ),
+                                        ],
+                                    ),
+                                ],
                             ),
-                            IconButton(
-                                onPressed: () {
-                                    changeStyleList();
-                                },
-                                icon: const Icon(Icons.list),
+                        ),
+                        itemHearder(),
+                        Expanded(
+                            child: Container(
+                                color: const Color.fromARGB(255, 228, 227, 227),
+                                child: styleList == 'grid' ? 
+                                    GridView.builder(
+                                        itemCount: posts.length ,
+                                        itemBuilder: (context, index) {
+                                            return ItemHomeGrid(item: posts[index]);
+                                        },
+                                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                            crossAxisCount: 2, 
+                                            crossAxisSpacing: 0,
+                                            mainAxisExtent: 270,
+                                        ),
+                                    )
+                                    :
+                                    ListView.builder(
+                                        //physics: const NeverScrollableScrollPhysics(),
+                                        itemCount: posts.length,
+                                        itemBuilder: (context, index) {
+                                            // if (index == 0) {
+                                            //     return itemHearder();
+                                            // }
+                                            return ItemHomeList(item: posts[index]);
+                                        }
+                                    ),
                             ),
-                        ],
-                    ),
-                ),
-                const SizedBox(height: 20),
-                Expanded(
-                    child: Container(
-                        child: styleList == 'grid' ? 
-                            GridView.builder(
-                                itemCount: posts.length ,
-                                itemBuilder: (context, index) {
-                                    return ItemHomeGrid(item: posts[index]);
-                                },
-                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2, 
-                                    crossAxisSpacing: 0,
-                                    mainAxisExtent: 270,
-                                ),
-                            )
-                            :
-                            ListView.builder(
-                                itemCount: posts.length,
-                                itemBuilder: (context, index) {
-                                    return ItemHomeList(item: posts[index]);
-                                }
-                            ),
-                    ),
-                ),
-            ],
-        )),
+                        ),
+                    ],
+                )
+            ),
         );
     }
 }

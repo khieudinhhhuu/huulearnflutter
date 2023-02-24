@@ -65,7 +65,7 @@ class HomeDetail extends StatelessWidget {
                       minScale: 0.5,
                       maxScale: 2,
                       child: Image.network(
-                        item?.imageUrl,
+                        item?.images,
                         fit: BoxFit.cover,
                         width: MediaQuery.of(context).size.width,
                         height: 300,
