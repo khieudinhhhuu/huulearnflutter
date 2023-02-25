@@ -279,6 +279,8 @@ class _MyWidgetState extends State<HomeScreen> {
                                             // if (index == 0) {
                                             //     return itemHearder();
                                             // }
+                                            // index -= 1;
+                                            // var row = posts[index];
                                             return ItemHomeList(item: posts[index]);
                                         }
                                     ),
